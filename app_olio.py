@@ -160,6 +160,8 @@ elif menu == "2. Inserimento Analisi":
                 conn.close()
                 st.success(f"Analisi salvata! Classificazione automatica: **{esito}**")
 
+                st.rerun()
+
 # --- SEZIONE 3: CERTIFICATI E RESOCONTI ---
 elif menu == "3. Certificati e Resoconti":
     st.header("Archivio Campioni e Stampa Certificati")
