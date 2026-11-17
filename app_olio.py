@@ -94,7 +94,7 @@ if menu == "1. Accettazione Cliente":
             azienda = st.text_input("Azienda Agricola / Frantoio")
         with col2:
             data_acc = st.date_input("Data di conferimento", value=date.today())
-            cultivar = st.selectbox("Cultivar prevalente", ["Leccino", "Frantoio", "Coratina", "Moraiolo", "Carboncella", "Blend / Altro"])
+            cultivar = st.selectbox("Cultivar prevalente", ["Leccino", "Piantone di Mogliano", "Piantone di Falerone", "Frantoio", "Coratina", "Moraiolo", "Carboncella", "Blend / Altro"])
             lotto = st.text_input("Identificativo Lotto / Cisterna")
         
         submitted = st.form_submit_button("Salva Campione")
