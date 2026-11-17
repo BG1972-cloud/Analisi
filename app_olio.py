@@ -126,11 +126,11 @@ elif menu == "2. Inserimento Analisi":
         st.info("Non ci sono campioni in attesa di analisi.")
     else:
         def reset_campi_analisi():
-        st.session_state["input_acidita"] = 0.0
-        st.session_state["input_perossidi"] = 0.0
-        st.session_state["input_polifenoli"] = 0.0
-        st.session_state["input_k232"] = 0.0
-        st.session_state["input_k270"] = 0.0
+          st.session_state["input_acidita"] = 0.0
+          st.session_state["input_perossidi"] = 0.0
+          st.session_state["input_polifenoli"] = 0.0
+          st.session_state["input_k232"] = 0.0
+          st.session_state["input_k270"] = 0.0
 
         scelta = st.selectbox("Seleziona il campione da analizzare", df_attesa["codice_campione"], on_change=reset_campi_analisi)
         dati_campione = df_attesa[df_attesa["codice_campione"] == scelta].iloc[0]
