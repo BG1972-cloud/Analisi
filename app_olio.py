@@ -39,13 +39,13 @@ def classifica_olio(acidita, perossidi, k232, k270):
     elif acidita <= 2.0 and perossidi <= 20 and k232 <= 2.60 and k270 <= 0.25:
         return "Olio di Oliva Vergine"
     else:
-        return "Olio Lampante (Non commestibile tal quale)"
+        return "Olio Lampante (Non commestibile)"
 
 def genera_pdf_certificato(dati):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 10, "ISTITUTO TECNICO AGRARIO - LABORATORIO CHIMICO", ln=True, align="C")
+    pdf.cell(0, 10, "ITT MONTANI sez. AGRARIA - LABORATORIO CHIMICO", ln=True, align="C")
     pdf.set_font("Arial", "I", 12)
     pdf.cell(0, 10, "Certificato di Analisi Olio di Oliva", ln=True, align="C")
     pdf.ln(10)
@@ -125,19 +125,26 @@ elif menu == "2. Inserimento Analisi":
     if df_attesa.empty:
         st.info("Non ci sono campioni in attesa di analisi.")
     else:
-        scelta = st.selectbox("Seleziona il campione da analizzare", df_attesa["codice_campione"])
+        def reset_campi_analisi():
+        st.session_state["input_acidita"] = 0.0
+        st.session_state["input_perossidi"] = 0.0
+        st.session_state["input_polifenoli"] = 0.0
+        st.session_state["input_k232"] = 0.0
+        st.session_state["input_k270"] = 0.0
+
+        scelta = st.selectbox("Seleziona il campione da analizzare", df_attesa["codice_campione"], on_change=reset_campi_analisi)
         dati_campione = df_attesa[df_attesa["codice_campione"] == scelta].iloc[0]
         st.write(f"**Cliente:** {dati_campione['cliente']} | **Cultivar:** {dati_campione['cultivar']}")
 
         with st.form("form_analisi"):
             col1, col2 = st.columns(2)
             with col1:
-                acidita = st.number_input("Acidità libera (% acido oleico)", min_value=0.0, max_value=10.0, step=0.01, format="%.2f")
-                perossidi = st.number_input("Numero di perossidi (meq O2/kg)", min_value=0.0, max_value=100.0, step=0.1, format="%.1f")
-                polifenoli = st.number_input("Polifenoli totali (mg/kg)", min_value=0.0, max_value=2000.0, step=1.0)
+                acidita = st.number_input("Acidità libera (% acido oleico)", min_value=0.0, max_value=10.0, step=0.01, format="%.2f", key="input_acidita")
+                perossidi = st.number_input("Numero di perossidi (meq O2/kg)", min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key="input_perossidi")
+                polifenoli = st.number_input("Polifenoli totali (mg/kg)", min_value=0.0, max_value=2000.0, step=1.0, key="input_polifenoli")
             with col2:
-                k232 = st.number_input("Assorbanza K232", min_value=0.0, max_value=5.0, step=0.01, format="%.2f")
-                k270 = st.number_input("Assorbanza K270", min_value=0.0, max_value=2.0, step=0.01, format="%.2f")
+                k232 = st.number_input("Assorbanza K232", min_value=0.0, max_value=5.0, step=0.01, format="%.2f", key="input_k232")
+                k270 = st.number_input("Assorbanza K270", min_value=0.0, max_value=2.0, step=0.01, format="%.2f", key="input_k270")
             
             salva_analisi = st.form_submit_button("Registra Risultati Analisi")
             if salva_analisi:
