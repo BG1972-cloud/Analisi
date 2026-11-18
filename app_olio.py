@@ -26,7 +26,6 @@ def init_db():
             polifenoli REAL,
             k232 REAL,
             k270 REAL,
-            #deltaK REAL,
             classificazione TEXT
         )
     ''')
