@@ -213,7 +213,20 @@ elif menu == "3. Modifica Analisi":
                 conn.close()
                 st.success(f"Analisi aggiornata! Classificazione automatica: **{esito}**")
 
-
+# --- ZONA ELIMINAZIONE CAMPIONE (fuori dal form) ---
+        st.divider()
+        with st.expander("🗑️ Elimina questo campione dal database"):
+            st.warning(f"Attenzione: stai per eliminare definitivamente il campione **{scelta}** ({dati_campione['cliente']}). L'operazione non è reversibile.")
+            conferma = st.checkbox("Confermo di voler eliminare definitivamente questo campione", key=f"conf_del_{scelta}")
+            
+            if st.button("Elimina Campione", type="primary", disabled=not conferma, key=f"btn_del_{scelta}"):
+                conn = sqlite3.connect("laboratorio_olio.db")
+                c = conn.cursor()
+                c.execute("DELETE FROM campioni WHERE codice_campione = ?", (scelta,))
+                conn.commit()
+                conn.close()
+                st.success(f"Campione **{scelta}** eliminato con successo.")
+                st.rerun()
 
         
 
