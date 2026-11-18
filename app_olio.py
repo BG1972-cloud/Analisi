@@ -77,7 +77,7 @@ def genera_pdf_certificato(dati):
 init_db()
 
 # --- INTERFACCIA UTENTE ---
-st.title("🫒 Gestionale Laboratorio Analisi Olio")
+st.title("🫒 ITT MONTANI - Gestionale Laboratorio Analisi Olio")
 st.markdown("Sistema didattico per l'accettazione campioni, analisi chimiche e statistica.")
 
 menu = st.sidebar.radio(
@@ -164,10 +164,22 @@ elif menu == "2. Inserimento Analisi":
                 conn.close()
                 st.success(f"Analisi salvata! Classificazione automatica: **{esito}**")
 
-                
 
-# --- SEZIONE 3: CERTIFICATI E RESOCONTI ---
-elif menu == "3. Certificati e Resoconti":
+# --- SEZIONE 3: MODIFICA ANALISI ---
+elif menu == "3. Modifica Analisi":
+    st.header("Modifica Dati di Laboratorio")
+    conn = sqlite3.connect("laboratorio_olio.db")
+    df_attesa = pd.read_sql_query("SELECT codice_campione, cliente, cultivar FROM campioni WHERE stato_analisi = 'In attesa'", conn)
+    conn.close()
+
+    if df_attesa.empty:
+        st.info("Non ci sono campioni in attesa di analisi.")
+    else:
+        
+
+
+# --- SEZIONE 4: CERTIFICATI E RESOCONTI ---
+elif menu == "4. Certificati e Resoconti":
     st.header("Archivio Campioni e Stampa Certificati")
     conn = sqlite3.connect("laboratorio_olio.db")
     df_tutti = pd.read_sql_query("SELECT * FROM campioni", conn)
@@ -201,8 +213,8 @@ elif menu == "3. Certificati e Resoconti":
             mime="application/pdf"
         )
 
-# --- SEZIONE 4: STATISTICHE ---
-elif menu == "4. Statistiche":
+# --- SEZIONE 5: STATISTICHE ---
+elif menu == "5. Statistiche":
     st.header("Analisi Statistica dei Campioni")
     conn = sqlite3.connect("laboratorio_olio.db")
     df_stat = pd.read_sql_query("SELECT * FROM campioni WHERE stato_analisi = 'Completato'", conn)
