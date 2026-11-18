@@ -169,7 +169,7 @@ elif menu == "2. Inserimento Analisi":
 elif menu == "3. Modifica Analisi":
     st.header("Modifica Dati di Laboratorio")
     conn = sqlite3.connect("laboratorio_olio.db")
-    df_modifica = pd.read_sql_query("SELECT codice_campione, cliente, cultivar, acidita, perossidi, polifenoli, k232, k270, deltak FROM campioni WHERE stato_analisi = 'Completato'", conn)
+    df_modifica = pd.read_sql_query("SELECT codice_campione, cliente, cultivar, acidita, perossidi, polifenoli, k232, k270, deltaK FROM campioni WHERE stato_analisi = 'Completato'", conn)
     conn.close()
 
     if df_modifica.empty:
@@ -180,7 +180,6 @@ elif menu == "3. Modifica Analisi":
         st.write(f"**Cliente:** {dati_campione['cliente']} | **Cultivar:** {dati_campione['cultivar']}")
 
         with st.form("form_analisi"):
-            st.write(df_modifica.columns.tolist())
             col1, col2 = st.columns(2)
             with col1:
                 acidita = st.number_input("Acidità libera (% acido oleico)", min_value=0.0, max_value=10.0, value=dati_campione["acidita"], step=0.01, format="%.2f", key="input_acidita")
@@ -189,7 +188,7 @@ elif menu == "3. Modifica Analisi":
             with col2:
                 k232 = st.number_input("Assorbanza K232", min_value=0.0, max_value=5.0, value=dati_campione["k232"], step=0.01, format="%.2f", key="input_k232")
                 k270 = st.number_input("Assorbanza K270", min_value=0.0, max_value=2.0, value=dati_campione["k270"], step=0.01, format="%.2f", key="input_k270")
-                deltaK = st.number_input("DELTA K", min_value=0.0, max_value=2.0, value=dati_campione["deltak"], step=0.01, format="%.2f", key="input_deltaK")
+                deltaK = st.number_input("DELTA K", min_value=0.0, max_value=2.0, value=dati_campione["deltaK"], step=0.01, format="%.2f", key="input_deltaK")
             
             salva_analisi = st.form_submit_button("Registra Risultati Analisi")
             if salva_analisi:
