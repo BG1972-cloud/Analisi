@@ -182,13 +182,13 @@ elif menu == "3. Modifica Analisi":
         with st.form("form_analisi"):
             col1, col2 = st.columns(2)
             with col1:
-                acidita = st.number_input("Acidità libera (% acido oleico)", min_value=0.0, max_value=10.0, value=dati_campione[acidita], step=0.01, format="%.2f", key="input_acidita")
-                perossidi = st.number_input("Numero di perossidi (meq O2/kg)", min_value=0.0, max_value=100.0, value=dati_campione[perossidi], step=0.1, format="%.1f", key="input_perossidi")
-                polifenoli = st.number_input("Polifenoli totali (mg/kg)", min_value=0.0, max_value=2000.0, value=dati_campione[polifenoli], step=1.0, key="input_polifenoli")
+                acidita = st.number_input("Acidità libera (% acido oleico)", min_value=0.0, max_value=10.0, value=dati_campione['acidita'], step=0.01, format="%.2f", key="input_acidita")
+                perossidi = st.number_input("Numero di perossidi (meq O2/kg)", min_value=0.0, max_value=100.0, value=dati_campione['perossidi'], step=0.1, format="%.1f", key="input_perossidi")
+                polifenoli = st.number_input("Polifenoli totali (mg/kg)", min_value=0.0, max_value=2000.0, value=dati_campione['polifenoli'], step=1.0, key="input_polifenoli")
             with col2:
-                k232 = st.number_input("Assorbanza K232", min_value=0.0, max_value=5.0, value=dati_campione[k232], step=0.01, format="%.2f", key="input_k232")
-                k270 = st.number_input("Assorbanza K270", min_value=0.0, max_value=2.0, value=dati_campione[k270], step=0.01, format="%.2f", key="input_k270")
-                deltaK = st.number_input("DELTA K", min_value=0.0, max_value=2.0, value=dati_campione[deltak], step=0.01, format="%.2f", key="input_deltaK")
+                k232 = st.number_input("Assorbanza K232", min_value=0.0, max_value=5.0, value=dati_campione['k232'], step=0.01, format="%.2f", key="input_k232")
+                k270 = st.number_input("Assorbanza K270", min_value=0.0, max_value=2.0, value=dati_campione['k270'], step=0.01, format="%.2f", key="input_k270")
+                deltaK = st.number_input("DELTA K", min_value=0.0, max_value=2.0, value=dati_campione['deltak'], step=0.01, format="%.2f", key="input_deltaK")
             
             salva_analisi = st.form_submit_button("Registra Risultati Analisi")
             if salva_analisi:
