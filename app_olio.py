@@ -65,7 +65,7 @@ def genera_pdf_certificato(dati):
     pdf.cell(0, 8, f"- Polifenoli Totali (mg/kg): {dati['polifenoli']}", ln=True)
     pdf.cell(0, 8, f"- Spettrofotometria K232: {dati['k232']}  (Limite EVO <= 2.50)", ln=True)
     pdf.cell(0, 8, f"- Spettrofotometria K270: {dati['k270']}  (Limite EVO <= 0.22)", ln=True)
-    pdf.cell(0, 8, f"- DeltaK: {dati['deltaK']}  (Limite EVO <= 0.01)", ln=True)
+    pdf.cell(0, 8, f"- Δ K: {dati['deltaK']}  (Limite EVO <= 0.01)", ln=True)
     pdf.ln(10)
 
     pdf.set_font("Arial", "B", 12)
