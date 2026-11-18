@@ -175,7 +175,34 @@ elif menu == "3. Modifica Analisi":
     if df_modifica.empty:
         st.info("Non ci sono campioni da aggiornare.")
     else:
-        codice_campione = st.selectbox("Scegli il campione da aggiornare", df_modifica["codice_campione"])
+        scelta = st.selectbox("Scegli il campione da aggiornare", df_modifica["codice_campione"])
+        dati_campione = df_modifica[df_modifica["codice_campione"] == scelta].iloc[0]
+        st.write(f"**Cliente:** {dati_campione['cliente']} | **Cultivar:** {dati_campione['cultivar']}")
+
+        with st.form("form_analisi"):
+            col1, col2 = st.columns(2)
+            with col1:
+                acidita = st.number_input("Acidità libera (% acido oleico)", min_value=0.0, max_value=10.0, value=dati_campione[acidita], step=0.01, format="%.2f", key="input_acidita")
+                perossidi = st.number_input("Numero di perossidi (meq O2/kg)", min_value=0.0, max_value=100.0, value=dati_campione[perossidi], step=0.1, format="%.1f", key="input_perossidi")
+                polifenoli = st.number_input("Polifenoli totali (mg/kg)", min_value=0.0, max_value=2000.0, value=dati_campione[polifenoli], step=1.0, key="input_polifenoli")
+            with col2:
+                k232 = st.number_input("Assorbanza K232", min_value=0.0, max_value=5.0, value=dati_campione[k232], step=0.01, format="%.2f", key="input_k232")
+                k270 = st.number_input("Assorbanza K270", min_value=0.0, max_value=2.0, value=dati_campione[k270], step=0.01, format="%.2f", key="input_k270")
+                deltaK = st.number_input("DELTA K", min_value=0.0, max_value=2.0, value=dati_campione[deltak], step=0.01, format="%.2f", key="input_deltaK")
+            
+            salva_analisi = st.form_submit_button("Registra Risultati Analisi")
+            if salva_analisi:
+                esito = classifica_olio(acidita, perossidi, k232, k270, deltaK)
+                conn = sqlite3.connect("laboratorio_olio.db")
+                c = conn.cursor()
+                c.execute('''
+                    UPDATE campioni 
+                    SET acidita=?, perossidi=?, polifenoli=?, k232=?, k270=?, deltaK=?, classificazione=?, stato_analisi='Completato'
+                    WHERE codice_campione=?
+                ''', (acidita, perossidi, polifenoli, k232, k270, deltaK, esito, scelta))
+                conn.commit()
+                conn.close()
+                st.success(f"Analisi aggiornata! Classificazione automatica: **{esito}**")
 
 
 
