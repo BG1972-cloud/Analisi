@@ -157,9 +157,9 @@ elif menu == "2. Inserimento Analisi":
                 c = conn.cursor()
                 c.execute('''
                     UPDATE campioni 
-                    SET acidita=?, perossidi=?, polifenoli=?, k232=?, k270=?, classificazione=?, stato_analisi='Completato'
+                    SET acidita=?, perossidi=?, polifenoli=?, k232=?, k270=?, deltaK=?, classificazione=?, stato_analisi='Completato'
                     WHERE codice_campione=?
-                ''', (acidita, perossidi, polifenoli, k232, k270, esito, scelta))
+                ''', (acidita, perossidi, polifenoli, k232, k270, deltaK, esito, scelta))
                 conn.commit()
                 conn.close()
                 st.success(f"Analisi salvata! Classificazione automatica: **{esito}**")
