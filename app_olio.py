@@ -26,13 +26,14 @@ def init_db():
             polifenoli REAL,
             k232 REAL,
             k270 REAL,
+            deltaK REAL,
             classificazione TEXT
         )
     ''')
     conn.commit()
     conn.close()
 
-def classifica_olio(acidita, perossidi, k232, k270):
+def classifica_olio(acidita, perossidi, k232, k270, deltaK):
     # Parametri standard UE per Olio Extravergine e Vergine
     if acidita <= 0.8 and perossidi <= 20 and k232 <= 2.50 and k270 <= 0.22:
         return "Olio Extravergine di Oliva (EVO)"
@@ -64,6 +65,7 @@ def genera_pdf_certificato(dati):
     pdf.cell(0, 8, f"- Polifenoli Totali (mg/kg): {dati['polifenoli']}", ln=True)
     pdf.cell(0, 8, f"- Spettrofotometria K232: {dati['k232']}  (Limite EVO <= 2.50)", ln=True)
     pdf.cell(0, 8, f"- Spettrofotometria K270: {dati['k270']}  (Limite EVO <= 0.22)", ln=True)
+    pdf.cell(0, 8, f"- DeltaK: {dati['deltaK']}  (Limite EVO <= 0.22)", ln=True)
     pdf.ln(10)
 
     pdf.set_font("Arial", "B", 12)
@@ -131,6 +133,7 @@ elif menu == "2. Inserimento Analisi":
           st.session_state["input_polifenoli"] = 0.0
           st.session_state["input_k232"] = 0.0
           st.session_state["input_k270"] = 0.0
+          st.session_state["input_deltaK"] = 0.0
 
         scelta = st.selectbox("Seleziona il campione da analizzare", df_attesa["codice_campione"], on_change=reset_campi_analisi)
         dati_campione = df_attesa[df_attesa["codice_campione"] == scelta].iloc[0]
@@ -145,10 +148,11 @@ elif menu == "2. Inserimento Analisi":
             with col2:
                 k232 = st.number_input("Assorbanza K232", min_value=0.0, max_value=5.0, step=0.01, format="%.2f", key="input_k232")
                 k270 = st.number_input("Assorbanza K270", min_value=0.0, max_value=2.0, step=0.01, format="%.2f", key="input_k270")
+                deltaK = st.number_input("DeltaK", min_value=0.0, max_value=2.0, step=0.01, format="%.2f", key="input_k270")
             
             salva_analisi = st.form_submit_button("Registra Risultati Analisi")
             if salva_analisi:
-                esito = classifica_olio(acidita, perossidi, k232, k270)
+                esito = classifica_olio(acidita, perossidi, k232, k270, deltaK)
                 conn = sqlite3.connect("laboratorio_olio.db")
                 c = conn.cursor()
                 c.execute('''
@@ -208,7 +212,7 @@ elif menu == "4. Statistiche":
         st.warning("Inserisci almeno 2 campioni analizzati per visualizzare le statistiche.")
     else:
         st.subheader("Indici Statistici Descrittivi")
-        parametri = ["acidita", "perossidi", "polifenoli", "k232", "k270"]
+        parametri = ["acidita", "perossidi", "polifenoli", "k232", "k270", "deltaK"]
         st.dataframe(df_stat[parametri].describe().round(2), use_container_width=True)
 
         col1, col2 = st.columns(2)
