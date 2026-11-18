@@ -172,7 +172,7 @@ elif menu == "3. Modifica Analisi":
     df_modifica = pd.read_sql_query("SELECT codice_campione, cliente, cultivar FROM campioni WHERE stato_analisi = 'Completato'", conn)
     conn.close()
 
-    if df_attesa.empty:
+    if df_modifica.empty:
         st.info("Non ci sono campioni da aggiornare.")
     else:
         codice_campione = st.selectbox("Scegli il campione da aggiornare", df_modifica["codice_campione"])
