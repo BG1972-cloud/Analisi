@@ -174,7 +174,7 @@ elif menu == "3. Modifica Analisi":
 
     if df_attesa.empty:
         st.info("Non ci sono campioni in attesa di analisi.")
-    else:
+    
         
 
 
