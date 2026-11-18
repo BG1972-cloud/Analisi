@@ -180,6 +180,7 @@ elif menu == "3. Modifica Analisi":
         st.write(f"**Cliente:** {dati_campione['cliente']} | **Cultivar:** {dati_campione['cultivar']}")
 
         with st.form("form_analisi"):
+            st.write(df_modifica.columns.tolist())
             col1, col2 = st.columns(2)
             with col1:
                 acidita = st.number_input("Acidità libera (% acido oleico)", min_value=0.0, max_value=10.0, value=dati_campione["acidita"], step=0.01, format="%.2f", key="input_acidita")
