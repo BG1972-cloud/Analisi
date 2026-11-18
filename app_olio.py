@@ -35,9 +35,9 @@ def init_db():
 
 def classifica_olio(acidita, perossidi, k232, k270, deltaK):
     # Parametri standard UE per Olio Extravergine e Vergine
-    if acidita <= 0.8 and perossidi <= 20 and k232 <= 2.50 and k270 <= 0.22:
+    if acidita <= 0.8 and perossidi <= 20 and k232 <= 2.50 and k270 <= 0.22 and deltaK <= 0.01:
         return "Olio Extravergine di Oliva (EVO)"
-    elif acidita <= 2.0 and perossidi <= 20 and k232 <= 2.60 and k270 <= 0.25:
+    elif acidita <= 2.0 and perossidi <= 20 and k232 <= 2.60 and k270 <= 0.25 and deltaK > 0.01:
         return "Olio di Oliva Vergine"
     else:
         return "Olio Lampante (Non commestibile)"
@@ -65,7 +65,7 @@ def genera_pdf_certificato(dati):
     pdf.cell(0, 8, f"- Polifenoli Totali (mg/kg): {dati['polifenoli']}", ln=True)
     pdf.cell(0, 8, f"- Spettrofotometria K232: {dati['k232']}  (Limite EVO <= 2.50)", ln=True)
     pdf.cell(0, 8, f"- Spettrofotometria K270: {dati['k270']}  (Limite EVO <= 0.22)", ln=True)
-    pdf.cell(0, 8, f"- DeltaK: {dati['deltaK']}  (Limite EVO <= 0.22)", ln=True)
+    pdf.cell(0, 8, f"- DeltaK: {dati['deltaK']}  (Limite EVO <= 0.01)", ln=True)
     pdf.ln(10)
 
     pdf.set_font("Arial", "B", 12)
@@ -148,7 +148,7 @@ elif menu == "2. Inserimento Analisi":
             with col2:
                 k232 = st.number_input("Assorbanza K232", min_value=0.0, max_value=5.0, step=0.01, format="%.2f", key="input_k232")
                 k270 = st.number_input("Assorbanza K270", min_value=0.0, max_value=2.0, step=0.01, format="%.2f", key="input_k270")
-                deltaK = st.number_input("DeltaK", min_value=0.0, max_value=2.0, step=0.01, format="%.2f", key="input_deltaK")
+                deltaK = st.number_input("Δ K", min_value=0.0, max_value=2.0, step=0.01, format="%.2f", key="input_deltaK")
             
             salva_analisi = st.form_submit_button("Registra Risultati Analisi")
             if salva_analisi:
