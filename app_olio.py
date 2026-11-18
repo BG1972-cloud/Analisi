@@ -148,7 +148,7 @@ elif menu == "2. Inserimento Analisi":
             with col2:
                 k232 = st.number_input("Assorbanza K232", min_value=0.0, max_value=5.0, step=0.01, format="%.2f", key="input_k232")
                 k270 = st.number_input("Assorbanza K270", min_value=0.0, max_value=2.0, step=0.01, format="%.2f", key="input_k270")
-                deltaK = st.number_input("DeltaK", min_value=0.0, max_value=2.0, step=0.01, format="%.2f", key="input_k270")
+                deltaK = st.number_input("DeltaK", min_value=0.0, max_value=2.0, step=0.01, format="%.2f", key="input_deltaK")
             
             salva_analisi = st.form_submit_button("Registra Risultati Analisi")
             if salva_analisi:
