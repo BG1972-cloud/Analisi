@@ -82,7 +82,7 @@ st.markdown("Sistema didattico per l'accettazione campioni, analisi chimiche e s
 
 menu = st.sidebar.radio(
     "Navigazione",
-    ["1. Accettazione Cliente", "2. Inserimento Analisi", "3. Certificati e Resoconti", "4. Statistiche"]
+    ["1. Accettazione Cliente", "2. Inserimento Analisi", "3. Modifica Analisi", "4. Certificati e Resoconti", "5. Statistiche"]
 )
 
 # --- SEZIONE 1: ACCETTAZIONE ---
