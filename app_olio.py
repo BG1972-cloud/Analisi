@@ -179,16 +179,25 @@ elif menu == "3. Modifica Analisi":
         dati_campione = df_modifica[df_modifica["codice_campione"] == scelta].iloc[0]
         st.write(f"**Cliente:** {dati_campione['cliente']} | **Cultivar:** {dati_campione['cultivar']}")
 
-        with st.form("form_analisi"):
+        # Conversione sicura in float per evitare errori con eventuali valori nulli nel DB
+        v_acidita = float(dati_campione["acidita"]) if pd.notna(dati_campione["acidita"]) else 0.0
+        v_perossidi = float(dati_campione["perossidi"]) if pd.notna(dati_campione["perossidi"]) else 0.0
+        v_polifenoli = float(dati_campione["polifenoli"]) if pd.notna(dati_campione["polifenoli"]) else 0.0
+        v_k232 = float(dati_campione["k232"]) if pd.notna(dati_campione["k232"]) else 0.0
+        v_k270 = float(dati_campione["k270"]) if pd.notna(dati_campione["k270"]) else 0.0
+        v_deltaK = float(dati_campione["deltaK"]) if pd.notna(dati_campione["deltaK"]) else 0.0
+
+        # Aggiungiamo _{scelta} sia al form sia a tutte le key
+        with st.form(f"form_analisi_{scelta}"):
             col1, col2 = st.columns(2)
             with col1:
-                acidita = st.number_input("Acidità libera (% acido oleico)", min_value=0.0, max_value=10.0, value=dati_campione["acidita"], step=0.01, format="%.2f", key="input_acidita")
-                perossidi = st.number_input("Numero di perossidi (meq O2/kg)", min_value=0.0, max_value=100.0, value=dati_campione["perossidi"], step=0.1, format="%.1f", key="input_perossidi")
-                polifenoli = st.number_input("Polifenoli totali (mg/kg)", min_value=0.0, max_value=2000.0, value=dati_campione["polifenoli"], step=1.0, key="input_polifenoli")
+                acidita = st.number_input("Acidità libera (% acido oleico)", min_value=0.0, max_value=10.0, value=v_acidita, step=0.01, format="%.2f", key=f"input_acidita_{scelta}")
+                perossidi = st.number_input("Numero di perossidi (meq O2/kg)", min_value=0.0, max_value=100.0, value=v_perossidi, step=0.1, format="%.1f", key=f"input_perossidi_{scelta}")
+                polifenoli = st.number_input("Polifenoli totali (mg/kg)", min_value=0.0, max_value=2000.0, value=v_polifenoli, step=1.0, key=f"input_polifenoli_{scelta}")
             with col2:
-                k232 = st.number_input("Assorbanza K232", min_value=0.0, max_value=5.0, value=dati_campione["k232"], step=0.01, format="%.2f", key="input_k232")
-                k270 = st.number_input("Assorbanza K270", min_value=0.0, max_value=2.0, value=dati_campione["k270"], step=0.01, format="%.2f", key="input_k270")
-                deltaK = st.number_input("DELTA K", min_value=0.0, max_value=2.0, value=dati_campione["deltaK"], step=0.01, format="%.2f", key="input_deltaK")
+                k232 = st.number_input("Assorbanza K232", min_value=0.0, max_value=5.0, value=v_k232, step=0.01, format="%.2f", key=f"input_k232_{scelta}")
+                k270 = st.number_input("Assorbanza K270", min_value=0.0, max_value=2.0, value=v_k270, step=0.01, format="%.2f", key=f"input_k270_{scelta}")
+                deltaK = st.number_input("DELTA K", min_value=0.0, max_value=2.0, value=v_deltaK, step=0.01, format="%.2f", key=f"input_deltaK_{scelta}")
             
             salva_analisi = st.form_submit_button("Registra Risultati Analisi")
             if salva_analisi:
