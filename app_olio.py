@@ -169,7 +169,7 @@ elif menu == "2. Inserimento Analisi":
 elif menu == "3. Modifica Analisi":
     st.header("Modifica Dati di Laboratorio")
     conn = sqlite3.connect("laboratorio_olio.db")
-    df_modifica = pd.read_sql_query("SELECT codice_campione, cliente, cultivar FROM campioni WHERE stato_analisi = 'Completato'", conn)
+    df_modifica = pd.read_sql_query("SELECT codice_campione, cliente, cultivar, acidita, perossidi, polifenoli, k232, k270, deltak FROM campioni WHERE stato_analisi = 'Completato'", conn)
     conn.close()
 
     if df_modifica.empty:
