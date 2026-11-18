@@ -169,12 +169,16 @@ elif menu == "2. Inserimento Analisi":
 elif menu == "3. Modifica Analisi":
     st.header("Modifica Dati di Laboratorio")
     conn = sqlite3.connect("laboratorio_olio.db")
-    df_attesa = pd.read_sql_query("SELECT codice_campione, cliente, cultivar FROM campioni WHERE stato_analisi = 'In attesa'", conn)
+    df_modifica = pd.read_sql_query("SELECT codice_campione, cliente, cultivar FROM campioni WHERE stato_analisi = 'Completato'", conn)
     conn.close()
 
     if df_attesa.empty:
-        st.info("Non ci sono campioni in attesa di analisi.")
-    
+        st.info("Non ci sono campioni da aggiornare.")
+    else:
+        codice_campione = st.selectbox("Scegli il campione da aggiornare", df_modifica["codice_campione"])
+
+
+
         
 
 
