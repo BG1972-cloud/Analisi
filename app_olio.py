@@ -26,14 +26,14 @@ def init_db():
             polifenoli REAL,
             k232 REAL,
             k270 REAL,
-            deltaK REAL,
+            #deltaK REAL,
             classificazione TEXT
         )
     ''')
     conn.commit()
     conn.close()
 
-def classifica_olio(acidita, perossidi, k232, k270, deltaK):
+def classifica_olio(acidita, perossidi, k232, k270):
     # Parametri standard UE per Olio Extravergine e Vergine
     if acidita <= 0.8 and perossidi <= 20 and k232 <= 2.50 and k270 <= 0.22:
         return "Olio Extravergine di Oliva (EVO)"
@@ -65,7 +65,7 @@ def genera_pdf_certificato(dati):
     pdf.cell(0, 8, f"- Polifenoli Totali (mg/kg): {dati['polifenoli']}", ln=True)
     pdf.cell(0, 8, f"- Spettrofotometria K232: {dati['k232']}  (Limite EVO <= 2.50)", ln=True)
     pdf.cell(0, 8, f"- Spettrofotometria K270: {dati['k270']}  (Limite EVO <= 0.22)", ln=True)
-    pdf.cell(0, 8, f"- Spettrofotometria DELTA K: {dati['deltaK']}  (Limite EVO <= 0.22)", ln=True)
+    #pdf.cell(0, 8, f"- Spettrofotometria DELTA K: {dati['deltaK']}  (Limite EVO <= 0.22)", ln=True)
     pdf.ln(10)
 
     pdf.set_font("Arial", "B", 12)
@@ -166,7 +166,8 @@ elif menu == "4. Statistiche":
         st.warning("Inserisci almeno 2 campioni analizzati per visualizzare le statistiche.")
     else:
         st.subheader("Indici Statistici Descrittivi")
-        parametri = ["acidita", "perossidi", "polifenoli", "k232", "k270", "deltaK"]
+        #parametri = ["acidita", "perossidi", "polifenoli", "k232", "k270", "deltaK"]
+        parametri = ["acidita", "perossidi", "polifenoli", "k232", "k270"]
         st.dataframe(df_stat[parametri].describe().round(2), use_container_width=True)
 
         col1, col2 = st.columns(2)
