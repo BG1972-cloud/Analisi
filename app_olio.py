@@ -244,7 +244,25 @@ if menu == "1. Accettazione Cliente":
                 quantita_litri = st.number_input("Quantità campionata (ml)", min_value=0, value=500, step=50)
                 filtrato = st.radio("Stato dell'olio", ["Grezzo / Torbido", "Filtrato"], horizontal=True)
                 data_estrazione = st.date_input("Data di estrazione (indicativa)", value=None)
-            
+
+                superficie = st.text_input("Superficie appezzamento (ha)")
+                produzione_totale = st.text_input("Produzione totale (kg)")
+                resa = st.text_input("Resa al frantoio (%)")
+
+                mosca = st.radio(
+                    "Presenza della Mosca dell’olivo",
+                    ["Si", "No"],
+                    horizontal=True,
+                    key="mosca",
+                )
+
+                insetticida = st.radio(
+                    "Coltivazione trattata con insetticida",
+                    ["Si", "No"],
+                    horizontal=True,
+                    key="insetticida",
+                )
+                
             note = st.text_area("Note di accettazione / Anomalie riscontrate (es. bottiglia non scura, tappo difettoso)", height=70)
 
 
