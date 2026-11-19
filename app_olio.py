@@ -86,11 +86,38 @@ menu = st.sidebar.radio(
     ["1. Accettazione Cliente", "2. Inserimento Analisi", "3. Modifica Analisi", "4. Certificati e Resoconti", "5. Statistiche"]
 )
 
-import time  # Assicurati di avere importato time in cima al tuo file
 
-import time  # Assicurati di avere importato time in cima al tuo file
+import time
+from datetime import date
 
-import time  # Assicurati di avere importato time in cima al tuo file
+
+# --- FUNZIONE PER GENERARE IL CODICE UNIVOCO ---
+def genera_prossimo_codice():
+    anno_corrente = date.today().year
+    prefisso = f"OLIO-{anno_corrente}-"
+    try:
+        conn = sqlite3.connect("laboratorio_olio.db")
+        c = conn.cursor()
+        # Cerca tutti i codici che iniziano con OLIO-ANNO-
+        c.execute(
+            "SELECT codice_campione FROM campioni WHERE codice_campione LIKE ?",
+            (f"{prefisso}%",),
+        )
+        risultati = c.fetchall()
+        conn.close()
+
+        numeri = []
+        for (cod,) in risultati:
+            parte_finale = cod.replace(prefisso, "")
+            if parte_finale.isdigit():
+                numeri.append(int(parte_finale))
+
+        prossimo_num = max(numeri) + 1 if numeri else 1
+        # Formatta con almeno due cifre (es. 01, 02... 10, 100)
+        return f"{prefisso}{prossimo_num:02d}"
+    except Exception:
+        return f"{prefisso}01"
+
 
 # --- SEZIONE 1: ACCETTAZIONE ---
 if menu == "1. Accettazione Cliente":
@@ -168,11 +195,17 @@ if menu == "1. Accettazione Cliente":
 
             st.info(f"Verrà salvato come: **{cultivar_finale}**")
 
+    # Calcola il prossimo codice disponibile dal database
+    codice_suggerito = genera_prossimo_codice()
+
     # 3. Form per gli altri dati e salvataggio
     with st.form("form_accettazione", clear_on_submit=True):
         col1, col2 = st.columns(2)
         with col1:
-            codice = st.text_input("Codice Univoco Campione (es. OLIO-2026-01)")
+            codice = st.text_input(
+                "Codice Univoco Campione (generato automaticamente)",
+                value=codice_suggerito,
+            )
             cliente = st.text_input("Nome e Cognome Cliente")
             azienda = st.text_input("Azienda Agricola / Frantoio")
         with col2:
@@ -181,7 +214,7 @@ if menu == "1. Accettazione Cliente":
 
         submitted = st.form_submit_button("Salva Campione")
         if submitted:
-            if not (codice and cliente):
+            if not (codice.strip() and cliente.strip()):
                 st.warning("Inserisci almeno Codice Campione e Cliente.")
             elif (
                 tipo_cultivar == "Monocultivar"
@@ -199,28 +232,30 @@ if menu == "1. Accettazione Cliente":
                         VALUES (?, ?, ?, ?, ?, ?)
                     """,
                         (
-                            codice,
+                            codice.strip(),
                             str(data_acc),
-                            cliente,
-                            azienda,
+                            cliente.strip(),
+                            azienda.strip(),
                             cultivar_finale.strip(),
-                            lotto,
+                            lotto.strip(),
                         ),
                     )
                     conn.commit()
                     conn.close()
 
                     st.success(
-                        f"Campione {codice} ({cultivar_finale.strip()}) salvato con successo!"
+                        f"Campione {codice.strip()} ({cultivar_finale.strip()}) salvato con successo!"
                     )
 
-                    # Attiva il flag di reset per il prossimo ricaricamento
+                    # Attiva il flag di reset e ricarica (aggiornerà anche il codice al numero successivo)
                     time.sleep(1.2)
                     st.session_state.reset_campione = True
                     st.rerun()
 
                 except sqlite3.IntegrityError:
-                    st.error("Errore: il codice campione esiste già.")
+                    st.error(
+                        f"Errore: il codice campione '{codice.strip()}' esiste già nel database."
+                    )
 
 
 
