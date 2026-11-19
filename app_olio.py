@@ -241,6 +241,7 @@ if menu == "1. Accettazione Cliente":
                     ["Estrazione per pressione", "Estrazione per centrifugazione", "Privato"],
                     horizontal=True,
                     key="tipo_estrazione",
+                )
                 
                 quantita_litri = st.number_input("Quantità campionata (ml)", min_value=0, value=500, step=50)
                 filtrato = st.radio("Stato dell'olio", ["Grezzo / Torbido", "Filtrato"], horizontal=True)
