@@ -120,6 +120,10 @@ if menu == "1. Accettazione Cliente":
 # --- SEZIONE 2: INSERIMENTO ANALISI ---
 elif menu == "2. Inserimento Analisi":
     st.header("Inserimento Dati di Laboratorio")
+
+    if "msg_inserimento" in st.session_state:
+        st.success(st.session_state.pop("msg_inserimento"))
+
     conn = sqlite3.connect("laboratorio_olio.db")
     df_attesa = pd.read_sql_query("SELECT codice_campione, cliente, cultivar FROM campioni WHERE stato_analisi = 'In attesa'", conn)
     conn.close()
@@ -127,28 +131,21 @@ elif menu == "2. Inserimento Analisi":
     if df_attesa.empty:
         st.info("Non ci sono campioni in attesa di analisi.")
     else:
-        def reset_campi_analisi():
-          st.session_state["input_acidita"] = 0.0
-          st.session_state["input_perossidi"] = 0.0
-          st.session_state["input_polifenoli"] = 0.0
-          st.session_state["input_k232"] = 0.0
-          st.session_state["input_k270"] = 0.0
-          st.session_state["input_deltaK"] = 0.0
-
-        scelta = st.selectbox("Seleziona il campione da analizzare", df_attesa["codice_campione"], on_change=reset_campi_analisi)
+        scelta = st.selectbox("Seleziona il campione da analizzare", df_attesa["codice_campione"])
         dati_campione = df_attesa[df_attesa["codice_campione"] == scelta].iloc[0]
         st.write(f"**Cliente:** {dati_campione['cliente']} | **Cultivar:** {dati_campione['cultivar']}")
 
-        with st.form("form_analisi"):
+        # Usando _{scelta} nelle key, ogni campione parte sempre pulito da 0.0 senza bisogno di reset manuale
+        with st.form(f"form_inserimento_{scelta}"):
             col1, col2 = st.columns(2)
             with col1:
-                acidita = st.number_input("Acidità libera (% acido oleico)", min_value=0.0, max_value=10.0, step=0.01, format="%.2f", key="input_acidita")
-                perossidi = st.number_input("Numero di perossidi (meq O2/kg)", min_value=0.0, max_value=100.0, step=0.1, format="%.1f", key="input_perossidi")
-                polifenoli = st.number_input("Polifenoli totali (mg/kg)", min_value=0.0, max_value=2000.0, step=1.0, key="input_polifenoli")
+                acidita = st.number_input("Acidità libera (% acido oleico)", min_value=0.0, max_value=10.0, value=0.0, step=0.01, format="%.2f", key=f"ins_acidita_{scelta}")
+                perossidi = st.number_input("Numero di perossidi (meq O2/kg)", min_value=0.0, max_value=100.0, value=0.0, step=0.1, format="%.1f", key=f"ins_perossidi_{scelta}")
+                polifenoli = st.number_input("Polifenoli totali (mg/kg)", min_value=0.0, max_value=2000.0, value=0.0, step=1.0, key=f"ins_polifenoli_{scelta}")
             with col2:
-                k232 = st.number_input("Assorbanza K232", min_value=0.0, max_value=5.0, step=0.01, format="%.2f", key="input_k232")
-                k270 = st.number_input("Assorbanza K270", min_value=0.0, max_value=2.0, step=0.01, format="%.2f", key="input_k270")
-                deltaK = st.number_input("DELTA K", min_value=0.0, max_value=2.0, step=0.01, format="%.2f", key="input_deltaK")
+                k232 = st.number_input("Assorbanza K232", min_value=0.0, max_value=5.0, value=0.0, step=0.01, format="%.2f", key=f"ins_k232_{scelta}")
+                k270 = st.number_input("Assorbanza K270", min_value=0.0, max_value=2.0, value=0.0, step=0.01, format="%.2f", key=f"ins_k270_{scelta}")
+                deltaK = st.number_input("DELTA K", min_value=0.0, max_value=2.0, value=0.0, step=0.01, format="%.2f", key=f"ins_deltaK_{scelta}")
             
             salva_analisi = st.form_submit_button("Registra Risultati Analisi")
             if salva_analisi:
@@ -162,14 +159,10 @@ elif menu == "2. Inserimento Analisi":
                 ''', (acidita, perossidi, polifenoli, k232, k270, deltaK, esito, scelta))
                 conn.commit()
                 conn.close()
-                
-                #st.success(f"Analisi salvata! Classificazione automatica: **{esito}**")
-                # 1. Azzera i campi per il prossimo campione in attesa
-                reset_campi_analisi()
-                # 2. Prepara il messaggio da mostrare dopo il ricaricamento
+
                 st.session_state["msg_inserimento"] = f"Analisi salvata per **{scelta}**! Classificazione automatica: **{esito}**"
-                # 3. Ricarica subito la sezione così il campione sparisce dalla selectbox
                 st.rerun()
+
 
 
 # --- SEZIONE 3: MODIFICA ANALISI ---
