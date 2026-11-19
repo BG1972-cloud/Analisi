@@ -216,7 +216,18 @@ if menu == "1. Accettazione Cliente":
         with st.expander("➕ Aggiungi dettagli tecnici, contatti o note (facoltativo)", expanded=False):
             exp_col1, exp_col2 = st.columns(2)
             with exp_col1:
+                indirizzo = st.text_input("Indirizzo")
+                codice_fiscale = st.text_input("Partita IVA o Codice Fiscale")
                 telefono = st.text_input("Telefono / Email Cliente")
+
+                tipo_fornitore = st.radio(
+                    "Tipologia Fornitore",
+                    ["Azienda biologica", "Azienda non biologica", "Privato"],
+                    horizontal=True,
+                    key="tipo_fornitore",
+                )
+
+
                 anno_raccolta = st.selectbox("Campagna Olearia", ["2026/2027", "2025/2026", "Altro"])
                 tipo_molitura = st.selectbox("Sistema di estrazione", ["Non specificato", "Ciclo continuo (2 fasi)", "Ciclo continuo (3 fasi)", "Tradizionale / Presse"])
             with exp_col2:
