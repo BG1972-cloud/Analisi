@@ -231,8 +231,6 @@ if menu == "1. Accettazione Cliente":
 
                 localita = st.text_input("Località raccolta (comune, civico o località appezzamento)")
 
-                data_estrazione = st.date_input("Data estrazione olio", value=date.today())
-
                 anno_raccolta = st.selectbox("Campagna Olearia", ["2026/2027", "2025/2026", "Altro"])
                 tipo_molitura = st.selectbox("Sistema di estrazione", ["Non specificato", "Ciclo continuo (2 fasi)", "Ciclo continuo (3 fasi)", "Tradizionale / Presse"])
             with exp_col2:
@@ -245,7 +243,7 @@ if menu == "1. Accettazione Cliente":
                 
                 quantita_litri = st.number_input("Quantità campionata (ml)", min_value=0, value=500, step=50)
                 filtrato = st.radio("Stato dell'olio", ["Grezzo / Torbido", "Filtrato"], horizontal=True)
-                data_molitura = st.date_input("Data di molitura (indicativa)", value=None)
+                data_estrazione = st.date_input("Data di estrazione (indicativa)", value=None)
             
             note = st.text_area("Note di accettazione / Anomalie riscontrate (es. bottiglia non scura, tappo difettoso)", height=70)
 
