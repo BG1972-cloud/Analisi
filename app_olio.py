@@ -212,6 +212,22 @@ if menu == "1. Accettazione Cliente":
             data_acc = st.date_input("Data di conferimento", value=date.today())
             lotto = st.text_input("Identificativo Lotto / Cisterna")
 
+        # --- SEZIONE ESPANDIBILE PER DATI FACOLTATIVI ---
+        with st.expander("➕ Aggiungi dettagli tecnici, contatti o note (facoltativo)", expanded=False):
+            exp_col1, exp_col2 = st.columns(2)
+            with exp_col1:
+                telefono = st.text_input("Telefono / Email Cliente")
+                anno_raccolta = st.selectbox("Campagna Olearia", ["2026/2027", "2025/2026", "Altro"])
+                tipo_molitura = st.selectbox("Sistema di estrazione", ["Non specificato", "Ciclo continuo (2 fasi)", "Ciclo continuo (3 fasi)", "Tradizionale / Presse"])
+            with exp_col2:
+                quantita_litri = st.number_input("Quantità campionata (ml)", min_value=0, value=500, step=50)
+                filtrato = st.radio("Stato dell'olio", ["Grezzo / Torbido", "Filtrato"], horizontal=True)
+                data_molitura = st.date_input("Data di molitura (indicativa)", value=None)
+            
+            note = st.text_area("Note di accettazione / Anomalie riscontrate (es. bottiglia non scura, tappo difettoso)", height=70)
+
+
+
         submitted = st.form_submit_button("Salva Campione")
         if submitted:
             if not (codice.strip() and cliente.strip()):
