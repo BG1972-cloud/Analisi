@@ -227,10 +227,21 @@ if menu == "1. Accettazione Cliente":
                     key="tipo_fornitore",
                 )
 
+                data_fine_raccolta = st.date_input("Data fine raccolta", value=date.today())
+
+                localita = st.text_input("Località raccolta (comune, civico o località appezzamento)")
+
+                data_estrazione = st.date_input("Data estrazione olio", value=date.today())
 
                 anno_raccolta = st.selectbox("Campagna Olearia", ["2026/2027", "2025/2026", "Altro"])
                 tipo_molitura = st.selectbox("Sistema di estrazione", ["Non specificato", "Ciclo continuo (2 fasi)", "Ciclo continuo (3 fasi)", "Tradizionale / Presse"])
             with exp_col2:
+                tipo_estrazione = st.radio(
+                    "Tipologia processo di estrazione",
+                    ["Estrazione per pressione", "Estrazione per centrifugazione", "Privato"],
+                    horizontal=True,
+                    key="tipo_estrazione",
+                
                 quantita_litri = st.number_input("Quantità campionata (ml)", min_value=0, value=500, step=50)
                 filtrato = st.radio("Stato dell'olio", ["Grezzo / Torbido", "Filtrato"], horizontal=True)
                 data_molitura = st.date_input("Data di molitura (indicativa)", value=None)
