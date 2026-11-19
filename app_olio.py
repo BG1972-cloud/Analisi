@@ -121,9 +121,6 @@ if menu == "1. Accettazione Cliente":
 elif menu == "2. Inserimento Analisi":
     st.header("Inserimento Dati di Laboratorio")
 
-    if "msg_inserimento" in st.session_state:
-        st.success(st.session_state.pop("msg_inserimento"))
-
     conn = sqlite3.connect("laboratorio_olio.db")
     df_attesa = pd.read_sql_query("SELECT codice_campione, cliente, cultivar FROM campioni WHERE stato_analisi = 'In attesa'", conn)
     conn.close()
@@ -162,8 +159,9 @@ elif menu == "2. Inserimento Analisi":
 
                 st.session_state["msg_inserimento"] = f"Analisi salvata per **{scelta}**! Classificazione automatica: **{esito}**"
                 st.rerun()
-
-
+                
+    if "msg_inserimento" in st.session_state:
+        st.success(st.session_state.pop("msg_inserimento"))
 
 # --- SEZIONE 3: MODIFICA ANALISI ---
 elif menu == "3. Modifica Analisi":
