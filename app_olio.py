@@ -162,7 +162,14 @@ elif menu == "2. Inserimento Analisi":
                 ''', (acidita, perossidi, polifenoli, k232, k270, deltaK, esito, scelta))
                 conn.commit()
                 conn.close()
-                st.success(f"Analisi salvata! Classificazione automatica: **{esito}**")
+                
+                #st.success(f"Analisi salvata! Classificazione automatica: **{esito}**")
+                # 1. Azzera i campi per il prossimo campione in attesa
+                reset_campi_analisi()
+                # 2. Prepara il messaggio da mostrare dopo il ricaricamento
+                st.session_state["msg_inserimento"] = f"Analisi salvata per **{scelta}**! Classificazione automatica: **{esito}**"
+                # 3. Ricarica subito la sezione così il campione sparisce dalla selectbox
+                st.rerun()
 
 
 # --- SEZIONE 3: MODIFICA ANALISI ---
