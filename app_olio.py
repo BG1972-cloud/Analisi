@@ -88,9 +88,22 @@ menu = st.sidebar.radio(
 
 import time  # Assicurati di avere importato time in cima al tuo file
 
+import time  # Assicurati di avere importato time in cima al tuo file
+
 # --- SEZIONE 1: ACCETTAZIONE ---
 if menu == "1. Accettazione Cliente":
     st.header("Registrazione Nuovo Campione")
+
+    # Lista centralizzata delle cultivar base (usata sia per selectbox che per checkbox)
+    CULTIVAR_BASE = [
+        "Leccino",
+        "Piantone di Mogliano",
+        "Piantone di Falerone",
+        "Frantoio",
+        "Coratina",
+        "Moraiolo",
+        "Carboncella",
+    ]
 
     # 1. Inizializzazione dello stato dei widget (necessario per il reset)
     if "tipo_cultivar" not in st.session_state:
@@ -99,6 +112,11 @@ if menu == "1. Accettazione Cliente":
         st.session_state.cultivar_select = "Leccino"
     if "cultivar_altro" not in st.session_state:
         st.session_state.cultivar_altro = ""
+
+    # Inizializza lo stato delle checkbox per il multicultivar
+    for c_name in CULTIVAR_BASE:
+        if f"chk_{c_name}" not in st.session_state:
+            st.session_state[f"chk_{c_name}"] = False
 
     # 2. Scelta dinamica fuori dal form
     col_tipo1, col_tipo2 = st.columns(2)
@@ -114,16 +132,7 @@ if menu == "1. Accettazione Cliente":
         if tipo_cultivar == "Monocultivar":
             cultivar_scelta = st.selectbox(
                 "Seleziona Cultivar",
-                [
-                    "Leccino",
-                    "Piantone di Mogliano",
-                    "Piantone di Falerone",
-                    "Frantoio",
-                    "Coratina",
-                    "Moraiolo",
-                    "Carboncella",
-                    "Altro",
-                ],
+                CULTIVAR_BASE + ["Altro"],
                 key="cultivar_select",
             )
             # Se sceglie "Altro", mostra il campo di testo libero
@@ -134,8 +143,24 @@ if menu == "1. Accettazione Cliente":
             else:
                 cultivar_finale = cultivar_scelta
         else:
-            cultivar_finale = "Multicultivar"
-            st.info("Verrà salvato come: **Multicultivar**")
+            st.write("**Seleziona le cultivar coinvolte (opzionale):**")
+            # Dispone le checkbox su 2 sotto-colonne per compattezza visiva
+            sub_col1, sub_col2 = st.columns(2)
+            selezionate = []
+
+            for i, c_name in enumerate(CULTIVAR_BASE):
+                target_col = sub_col1 if i % 2 == 0 else sub_col2
+                with target_col:
+                    if st.checkbox(c_name, key=f"chk_{c_name}"):
+                        selezionate.append(c_name)
+
+            # Costruisce la stringa finale con le cultivar tra parentesi
+            if selezionate:
+                cultivar_finale = f"Multicultivar ({', '.join(selezionate)})"
+            else:
+                cultivar_finale = "Multicultivar"
+
+            st.info(f"Verrà salvato come: **{cultivar_finale}**")
 
     # 3. Form per gli altri dati e salvataggio
     with st.form("form_accettazione", clear_on_submit=True):
@@ -189,6 +214,9 @@ if menu == "1. Accettazione Cliente":
                     st.session_state.tipo_cultivar = "Monocultivar"
                     st.session_state.cultivar_select = "Leccino"
                     st.session_state.cultivar_altro = ""
+                    for c_name in CULTIVAR_BASE:
+                        st.session_state[f"chk_{c_name}"] = False
+
                     st.rerun()
 
                 except sqlite3.IntegrityError:
