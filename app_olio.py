@@ -90,11 +90,12 @@ import time  # Assicurati di avere importato time in cima al tuo file
 
 import time  # Assicurati di avere importato time in cima al tuo file
 
+import time  # Assicurati di avere importato time in cima al tuo file
+
 # --- SEZIONE 1: ACCETTAZIONE ---
 if menu == "1. Accettazione Cliente":
     st.header("Registrazione Nuovo Campione")
 
-    # Lista centralizzata delle cultivar base (usata sia per selectbox che per checkbox)
     CULTIVAR_BASE = [
         "Leccino",
         "Piantone di Mogliano",
@@ -105,7 +106,16 @@ if menu == "1. Accettazione Cliente":
         "Carboncella",
     ]
 
-    # 1. Inizializzazione dello stato dei widget (necessario per il reset)
+    # 1. Gestione del reset PRIMA di disegnare i widget
+    if st.session_state.get("reset_campione", False):
+        st.session_state.tipo_cultivar = "Monocultivar"
+        st.session_state.cultivar_select = "Leccino"
+        st.session_state.cultivar_altro = ""
+        for c_name in CULTIVAR_BASE:
+            st.session_state[f"chk_{c_name}"] = False
+        st.session_state.reset_campione = False
+
+    # Inizializzazione dello stato dei widget al primo avvio
     if "tipo_cultivar" not in st.session_state:
         st.session_state.tipo_cultivar = "Monocultivar"
     if "cultivar_select" not in st.session_state:
@@ -113,7 +123,6 @@ if menu == "1. Accettazione Cliente":
     if "cultivar_altro" not in st.session_state:
         st.session_state.cultivar_altro = ""
 
-    # Inizializza lo stato delle checkbox per il multicultivar
     for c_name in CULTIVAR_BASE:
         if f"chk_{c_name}" not in st.session_state:
             st.session_state[f"chk_{c_name}"] = False
@@ -135,7 +144,6 @@ if menu == "1. Accettazione Cliente":
                 CULTIVAR_BASE + ["Altro"],
                 key="cultivar_select",
             )
-            # Se sceglie "Altro", mostra il campo di testo libero
             if cultivar_scelta == "Altro":
                 cultivar_finale = st.text_input(
                     "Specifica il nome del Cultivar", key="cultivar_altro"
@@ -144,7 +152,6 @@ if menu == "1. Accettazione Cliente":
                 cultivar_finale = cultivar_scelta
         else:
             st.write("**Seleziona le cultivar coinvolte (opzionale):**")
-            # Dispone le checkbox su 2 sotto-colonne per compattezza visiva
             sub_col1, sub_col2 = st.columns(2)
             selezionate = []
 
@@ -154,7 +161,6 @@ if menu == "1. Accettazione Cliente":
                     if st.checkbox(c_name, key=f"chk_{c_name}"):
                         selezionate.append(c_name)
 
-            # Costruisce la stringa finale con le cultivar tra parentesi
             if selezionate:
                 cultivar_finale = f"Multicultivar ({', '.join(selezionate)})"
             else:
@@ -175,7 +181,6 @@ if menu == "1. Accettazione Cliente":
 
         submitted = st.form_submit_button("Salva Campione")
         if submitted:
-            # Controllo che i campi obbligatori siano compilati
             if not (codice and cliente):
                 st.warning("Inserisci almeno Codice Campione e Cliente.")
             elif (
@@ -209,18 +214,14 @@ if menu == "1. Accettazione Cliente":
                         f"Campione {codice} ({cultivar_finale.strip()}) salvato con successo!"
                     )
 
-                    # Pausa breve per far leggere il messaggio di conferma, poi reset dei campi esterni
+                    # Attiva il flag di reset per il prossimo ricaricamento
                     time.sleep(1.2)
-                    st.session_state.tipo_cultivar = "Monocultivar"
-                    st.session_state.cultivar_select = "Leccino"
-                    st.session_state.cultivar_altro = ""
-                    for c_name in CULTIVAR_BASE:
-                        st.session_state[f"chk_{c_name}"] = False
-
+                    st.session_state.reset_campione = True
                     st.rerun()
 
                 except sqlite3.IntegrityError:
                     st.error("Errore: il codice campione esiste già.")
+
 
 
 # --- SEZIONE 2: INSERIMENTO ANALISI ---
