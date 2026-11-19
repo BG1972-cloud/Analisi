@@ -1,6 +1,7 @@
 import streamlit as st
 import sqlite3
 import pandas as pd
+import time
 from datetime import date
 from fpdf import FPDF
 
@@ -85,9 +86,58 @@ menu = st.sidebar.radio(
     ["1. Accettazione Cliente", "2. Inserimento Analisi", "3. Modifica Analisi", "4. Certificati e Resoconti", "5. Statistiche"]
 )
 
+import time  # Assicurati di avere importato time in cima al tuo file
+
 # --- SEZIONE 1: ACCETTAZIONE ---
 if menu == "1. Accettazione Cliente":
     st.header("Registrazione Nuovo Campione")
+
+    # 1. Inizializzazione dello stato dei widget (necessario per il reset)
+    if "tipo_cultivar" not in st.session_state:
+        st.session_state.tipo_cultivar = "Monocultivar"
+    if "cultivar_select" not in st.session_state:
+        st.session_state.cultivar_select = "Leccino"
+    if "cultivar_altro" not in st.session_state:
+        st.session_state.cultivar_altro = ""
+
+    # 2. Scelta dinamica fuori dal form
+    col_tipo1, col_tipo2 = st.columns(2)
+    with col_tipo1:
+        tipo_cultivar = st.radio(
+            "Tipologia Olio",
+            ["Monocultivar", "Multicultivar"],
+            horizontal=True,
+            key="tipo_cultivar",
+        )
+
+    with col_tipo2:
+        if tipo_cultivar == "Monocultivar":
+            cultivar_scelta = st.selectbox(
+                "Seleziona Cultivar",
+                [
+                    "Leccino",
+                    "Piantone di Mogliano",
+                    "Piantone di Falerone",
+                    "Frantoio",
+                    "Coratina",
+                    "Moraiolo",
+                    "Carboncella",
+                    "Altro",
+                ],
+                key="cultivar_select",
+            )
+            # Se sceglie "Altro", mostra il campo di testo libero
+            if cultivar_scelta == "Altro":
+                cultivar_finale = st.text_input(
+                    "Specifica il nome del Cultivar", key="cultivar_altro"
+                )
+            else:
+                cultivar_finale = cultivar_scelta
+        else:
+            cultivar_finale = "Multicultivar"
+            st.info("Verrà salvato come: **Multicultivar**")
+
+    # 3. Form per gli altri dati e salvataggio
     with st.form("form_accettazione", clear_on_submit=True):
         col1, col2 = st.columns(2)
         with col1:
@@ -96,26 +146,54 @@ if menu == "1. Accettazione Cliente":
             azienda = st.text_input("Azienda Agricola / Frantoio")
         with col2:
             data_acc = st.date_input("Data di conferimento", value=date.today())
-            cultivar = st.selectbox("Cultivar prevalente", ["Leccino", "Piantone di Mogliano", "Piantone di Falerone", "Frantoio", "Coratina", "Moraiolo", "Carboncella", "Blend / Altro"])
             lotto = st.text_input("Identificativo Lotto / Cisterna")
-        
+
         submitted = st.form_submit_button("Salva Campione")
         if submitted:
-            if codice and cliente:
+            # Controllo che i campi obbligatori siano compilati
+            if not (codice and cliente):
+                st.warning("Inserisci almeno Codice Campione e Cliente.")
+            elif (
+                tipo_cultivar == "Monocultivar"
+                and cultivar_scelta == "Altro"
+                and not cultivar_finale.strip()
+            ):
+                st.warning("Hai selezionato 'Altro': specifica il nome del cultivar.")
+            else:
                 try:
                     conn = sqlite3.connect("laboratorio_olio.db")
                     c = conn.cursor()
-                    c.execute('''
+                    c.execute(
+                        """
                         INSERT INTO campioni (codice_campione, data_accettazione, cliente, azienda, cultivar, lotto)
                         VALUES (?, ?, ?, ?, ?, ?)
-                    ''', (codice, str(data_acc), cliente, azienda, cultivar, lotto))
+                    """,
+                        (
+                            codice,
+                            str(data_acc),
+                            cliente,
+                            azienda,
+                            cultivar_finale.strip(),
+                            lotto,
+                        ),
+                    )
                     conn.commit()
                     conn.close()
-                    st.success(f"Campione {codice} registrato correttamente!")
+
+                    st.success(
+                        f"Campione {codice} ({cultivar_finale.strip()}) salvato con successo!"
+                    )
+
+                    # Pausa breve per far leggere il messaggio di conferma, poi reset dei campi esterni
+                    time.sleep(1.2)
+                    st.session_state.tipo_cultivar = "Monocultivar"
+                    st.session_state.cultivar_select = "Leccino"
+                    st.session_state.cultivar_altro = ""
+                    st.rerun()
+
                 except sqlite3.IntegrityError:
-                    st.error("Errore: Questo codice campione esiste già.")
-            else:
-                st.warning("Inserisci almeno il Codice Campione e il nome del Cliente.")
+                    st.error("Errore: il codice campione esiste già.")
+
 
 # --- SEZIONE 2: INSERIMENTO ANALISI ---
 elif menu == "2. Inserimento Analisi":
